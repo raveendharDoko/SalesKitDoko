@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const SalesCalls = require("../schema/salesCall.js")
 
 
@@ -29,28 +30,35 @@ const assignSaleCalls = async (req, res) => {
 const yourCallList = async (req, res) => {
 
     try {
-        let getCallList = await SalesCalls.find({ assignedTo: req.userInfo.userId })
-        let getCompany = await SalesCalls.aggregate([{
+
+      
+        let id = new mongoose.Types.ObjectId( req.userInfo.userId)
+        let getCompany = await SalesCalls.aggregate([
+            {$match:{"assignedTo": id}},
+            {
             $lookup: {
                 from: "companies",
                 localField: "companyId",
                 foreignField: "_id",
                 as: "getCompany",
             },
-        }])
+        },
+        {$project:{_id:1,companyId:1,status:1,assignedDate:1,"getCompany.companyId":1,"getCompany.contact":1}}
+    ])
 
-        if (getCallList.length === 0) {
+        if (getCompany.length === 0) {
             return res.send({ status: 1, response: getCallList })
         }
         let info = getCompany.map((call) => {
             let obj = {}
+            obj.callId = call._id
             obj.companyId = call.companyId
-            obj.assignedBy = call.assignedBy
             obj.assignedOn = call.assignedDate
             obj.status = call.status
             obj.companyNumber = call.getCompany[0].contact
             return obj
         })
+        
         return res.send({ status: 0, response: info })
 
     } catch (error) {

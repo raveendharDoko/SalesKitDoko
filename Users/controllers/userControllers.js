@@ -2,7 +2,7 @@ const User = require("../schema/user.js")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 
-const emailRegex = /^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$/
+const emailRegex = /^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$/        
 
 const createPowers = async (req, res) => {
     try {
@@ -115,12 +115,14 @@ const createRelationship = async (req, res) => {
 const getAllEmployees = async (req, res) => {
     try {
         let getAllEmployees = await User.find({ role: 1 })
-        if (req.userInfo.userRole !== 4) {
+
+        if (req.userInfo.userRole === 1) {
             return res.send({ status: 1, reponse: "Not authorized" })
         }
         if (getAllEmployees.length === 0) {
             return res.send({ status: 1, data: getAllEmployees })
         }
+
         return res.send({ status: 1, data: getAllEmployees })
     } catch (error) {
         return res.send({ status: 0, response: error })
@@ -131,14 +133,14 @@ const getAllEmployees = async (req, res) => {
 
 const getAllAdmins = async (req, res) => {
     try {
-        let getAllEmployees = await User.find({ role: 3 })
+        let getAllAdmins = await User.find({ role: 3 })
         if (req.userInfo.userRole !== 4) {
             return res.send({ status: 1, reponse: "Not authorized" })
         }
-        if (getAllEmployees.length === 0) {
-            return res.send({ status: 1, data: getAllEmployees })
+        if (getAllAdmins.length === 0) {
+            return res.send({ status: 1, data: getAllAdmins })
         }
-        return res.send({ status: 1, data: getAllEmployees })
+        return res.send({ status: 1, data: getAllAdmins })
     } catch (error) {
         return res.send({ status: 0, response: error })
     }
@@ -148,14 +150,14 @@ const getAllAdmins = async (req, res) => {
 
 const getAllManagers = async (req, res) => {
     try {
-        let getAllEmployees = await User.find({ role: 2 })
+        let getAllManagers = await User.find({ role: 2 })
         if (req.userInfo.userRole !== 4) {
             return res.send({ status: 1, reponse: "Not authorized" })
         }
-        if (getAllEmployees.length === 0) {
-            return res.send({ status: 1, data: getAllEmployees })
+        if (getAllManagers.length === 0) {
+            return res.send({ status: 1, data: getAllManagers })
         }
-        return res.send({ status: 1, data: getAllEmployees })
+        return res.send({ status: 1, data: getAllManagers })
     } catch (error) {
         return res.send({ status: 0, response: error })
     }
